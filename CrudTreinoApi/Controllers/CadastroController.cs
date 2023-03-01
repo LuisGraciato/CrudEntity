@@ -32,7 +32,7 @@ namespace CrudTreinoApi.Controllers;
 
             return informacao != null
                 ? Ok(informacao)
-                : NotFound("Cadastro nao encontrado teste");
+                : NotFound("Cadastro nao encontrado testesa");
         }
 
     [HttpPost]
