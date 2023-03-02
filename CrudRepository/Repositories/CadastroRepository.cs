@@ -16,14 +16,10 @@ public class CadastroRepository : ICadastroRepository
     {
         return await _context.Cadastros.ToListAsync();
     }
-    public async Task<Cadastro> BuscaCadastroAsync(int contactId)
+    public async Task<Cadastro?> BuscaCadastroAsync(int contactId)
     {
-        var cadastro = await _context.Cadastros.FirstOrDefaultAsync(c => c.ContactID == contactId);
-        if (cadastro == null)
-        {
-            throw new ArgumentNullException(nameof(cadastro));
-        }
-        return cadastro;
+        return await _context.Cadastros.FirstOrDefaultAsync(c => c.ContactID == contactId);
+        
     }
     public async Task AdicionaAsync(Cadastro cadastro)
     {
@@ -43,13 +39,8 @@ public class CadastroRepository : ICadastroRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeletarAsync(int contactId)
+    public async Task DeletarAsync(Cadastro cadastro)
     {
-        var cadastro = _context.Cadastros.Find(contactId);
-        if (cadastro == null)
-        {
-            throw new ArgumentNullException(nameof(cadastro));
-        }
         _context.Cadastros.Remove(cadastro);
         await _context.SaveChangesAsync();
     }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CrudDomain.Dtos;
+using CrudRepository.Dtos;
 using CrudTreinoApi.Models;
 
 namespace CrudRepository.Profiles
@@ -8,8 +9,11 @@ namespace CrudRepository.Profiles
     {
         public CadastroProfile()
         {
+            //Fonte -> Alvo
             CreateMap<Cadastro, CadastroReadDto>();
             CreateMap<CadastroCreateDto, Cadastro>();
+            CreateMap<CadastroUpdateDto, Cadastro>();
+
         }
     }
 }

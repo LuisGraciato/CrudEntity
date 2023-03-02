@@ -8,6 +8,6 @@ public interface ICadastroRepository
     Task<Cadastro> BuscaCadastroAsync(int contactId);
     Task AdicionaAsync(Cadastro cadastro);
     Task AtualizarAsync(Cadastro cadastro);
-    Task DeletarAsync(int contactId);
+    Task DeletarAsync(Cadastro cadastro);
 }
 

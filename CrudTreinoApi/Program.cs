@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<CadastroContext>(opt => opt.UseSqlServer(""));
+builder.Services.AddDbContext<CadastroContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection")));
 builder.Services.AddScoped<ICadastroRepository, CadastroRepository>();
 builder.Services.AddScoped<ICadastroService, CadastroService>();
 builder.Services.AddEndpointsApiExplorer();

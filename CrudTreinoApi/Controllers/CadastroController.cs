@@ -1,4 +1,6 @@
+using Azure.Core;
 using CrudDomain.Dtos;
+using CrudRepository.Dtos;
 using CrudTreinoApi.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +16,7 @@ public class CadastroController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> GetAll()
     {
         var informacoes = await _service.BuscaCadastrosAsync();
 
@@ -24,7 +26,7 @@ public class CadastroController : ControllerBase
     }
 
     [HttpGet("ContactID")]
-    public async Task<IActionResult> Get(int contactid)
+    public async Task<IActionResult> GetByID(int contactid)
     {
 
         var informacao = await _service.BuscaCadastroAsync(contactid);
@@ -35,43 +37,26 @@ public class CadastroController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(CadastroCreateDto request)
+    public async Task<IActionResult> Create(CadastroCreateDto request)
     {
-        try
-        {
-            var adicionado = await _service.AdicionaAsync(request);
-
-            return adicionado
-           ? Ok("Cadastro adicionadao com sucesso")
-           : BadRequest("Erro ao adionar Cadastro");
-        }
-        catch (Exception err)
-        {
-
-            return BadRequest(err.Message);
-        }
-
+        await _service.AdicionaAsync(request);
+        return Ok("Criado com sucesso");
     }
 
-    [HttpPut("ContactID")]
-    public async Task<IActionResult> Put(CadastroCreateDto request, int contactid)
+    [HttpPut]
+    public async Task<ActionResult> Update(CadastroUpdateDto cadastroUpdate)
     {
-        var atualizado = await _service.AtualizarAsync(request, contactid);
+        await _service.AtualizarAsync(cadastroUpdate);
+        return Ok("Atualizado com sucesso");
 
-        return atualizado
-           ? Ok("Cadastro atualizado com sucesso")
-           : BadRequest("Erro ao atualizar cadastro");
     }
 
     [HttpDelete("ContactID")]
     public async Task<IActionResult> Delete(int contactid)
     {
 
-        var deletado = await _service.DeletarAsync(contactid);
-
-        return deletado
-          ? Ok("Cadastro deletado com sucesso")
-          : BadRequest("Erro ao deletar cadastro");
+        await _service.DeletarAsync(contactid);
+        return Ok("Deletado com sucesso");
     }
 }
 
