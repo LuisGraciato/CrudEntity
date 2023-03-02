@@ -1,80 +1,57 @@
-﻿using CrudTreinoApi.Models;
-using Dapper;
-using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
+﻿using CrudDomain.Data;
+using CrudTreinoApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CrudTreinoApi.Repository;
 
 public class CadastroRepository : ICadastroRepository
 {
-    private readonly IConfiguration _configuration;
-    private readonly string connectionString;
+    private readonly CadastroContext _context;
 
-    public CadastroRepository(IConfiguration configuration)
+    public CadastroRepository(CadastroContext context)
     {
-        _configuration = configuration;
-        connectionString = _configuration.GetConnectionString("SqlConnection");
+        _context = context;
     }
-    public async Task<IEnumerable<CadastroResponse>> BuscaCadastrosAsync()
+    public async Task<IEnumerable<Cadastro>> BuscaCadastrosAsync()
     {
-        string sql = @"SELECT 
-	                        C.Contactid    Contactid,
-	                        C.Name         Name,           
-	                        C.Mobile       Mobile,
-	                        C.Address      Address 
-	                        FROM contact c";
-
-        using var con = new SqlConnection(connectionString);
-        return await con.QueryAsync<CadastroResponse>(sql);
+        return await _context.Cadastros.ToListAsync();
     }
-    public async Task<CadastroResponse> BuscaCadastroAsync(int contactid)
+    public async Task<Cadastro> BuscaCadastroAsync(int contactId)
     {
-        string sql = @"SELECT 
-	                        c.contactid    contactid,
-	                        c.name         Name,           
-	                        c.mobile       Mobile,
-	                        c.address      Address 
-	                        FROM contact c
-                            WHERE c.contactid = @contactid";
-        using var con = new SqlConnection(connectionString);
-        return await con.QueryFirstOrDefaultAsync<CadastroResponse>(sql, new { contactid = contactid });
+        var cadastro = await _context.Cadastros.FirstOrDefaultAsync(c => c.ContactID == contactId);
+        if (cadastro == null)
+        {
+            throw new ArgumentNullException(nameof(cadastro));
+        }
+        return cadastro;
     }
-    public async Task<bool> AdicionaAsync(CadastroRequest request)
+    public async Task AdicionaAsync(Cadastro cadastro)
     {
-        string sql = @"INSERT INTO Contact(Name, Mobile, Address)
-                        VALUES (@Name, @Mobile, @address)";
-
-        using var con = new SqlConnection(connectionString);
-        return await con.ExecuteAsync(sql, request) > 0;
+        if (cadastro == null)
+        {
+            throw new ArgumentNullException(nameof(cadastro));
+        }
+        await _context.Cadastros.AddAsync(cadastro);
+        await _context.SaveChangesAsync();
 
     }
 
-    public async Task<bool> AtualizarAsync(CadastroRequest request, int contactid)
+    public async Task AtualizarAsync(Cadastro cadastro)
     {
-        string sql = @"UPDATE Contact SET
-                            Name = @Name,
-                            Mobile = @Mobile,
-                            Address = @Address
-                        WHERE contactid = @contactId";
+        _context.Update(cadastro);
 
-        var parametros = new DynamicParameters();
-        parametros.Add("Name", request.Name);
-        parametros.Add("Mobile", request.Mobile);
-        parametros.Add("Address", request.Address);
-        parametros.Add("ContactId", contactid);
-
-        using var con = new SqlConnection(connectionString);
-        return await con.ExecuteAsync(sql, parametros) > 0;
-
+        await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> DeletarAsync(int contactid)
+    public async Task DeletarAsync(int contactId)
     {
-        string sql = @"DELETE FROM contact
-                        WHERE contactid = @contactId";
-
-        using var con = new SqlConnection(connectionString); 
-        return await con.ExecuteAsync(sql, new { contactid = contactid }) > 0;
+        var cadastro = _context.Cadastros.Find(contactId);
+        if (cadastro == null)
+        {
+            throw new ArgumentNullException(nameof(cadastro));
+        }
+        _context.Cadastros.Remove(cadastro);
+        await _context.SaveChangesAsync();
     }
 }
 

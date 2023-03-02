@@ -1,42 +1,41 @@
-using CrudTreinoApi.Models;
-using CrudTreinoApi.Repository;
+using CrudDomain.Dtos;
 using CrudTreinoApi.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrudTreinoApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
- public class CadastroController : ControllerBase
+public class CadastroController : ControllerBase
+{
+    private readonly ICadastroService _service;
+    public CadastroController(ICadastroService service)
     {
-        private readonly ICadastroService _service;
-        public CadastroController(ICadastroService service)
-        {
-            _service= service;
-        }
+        _service = service;
+    }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            var informacoes = await _service.BuscaCadastrosAsync();
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+        var informacoes = await _service.BuscaCadastrosAsync();
 
-            return informacoes.Any()
-                ? Ok(informacoes)
-                : NoContent();
-        }
+        return informacoes.Any()
+            ? Ok(informacoes)
+            : NoContent();
+    }
 
-        [HttpGet("ContactID")]
-        public async Task<IActionResult> Get(int contactid)
-        {
+    [HttpGet("ContactID")]
+    public async Task<IActionResult> Get(int contactid)
+    {
 
-            var informacao = await _service.BuscaCadastroAsync(contactid);
+        var informacao = await _service.BuscaCadastroAsync(contactid);
 
-            return informacao != null
-                ? Ok(informacao)
-                : NotFound("Cadastro nao encontrado testesa");
-        }
+        return informacao != null
+            ? Ok(informacao)
+            : NotFound("Cadastro nao encontrado");
+    }
 
     [HttpPost]
-    public async Task<IActionResult> Post(CadastroRequest request)
+    public async Task<IActionResult> Post(CadastroCreateDto request)
     {
         try
         {
@@ -53,9 +52,9 @@ namespace CrudTreinoApi.Controllers;
         }
 
     }
-    
+
     [HttpPut("ContactID")]
-    public async Task<IActionResult> Put(CadastroRequest request, int contactid)
+    public async Task<IActionResult> Put(CadastroCreateDto request, int contactid)
     {
         var atualizado = await _service.AtualizarAsync(request, contactid);
 
@@ -64,10 +63,10 @@ namespace CrudTreinoApi.Controllers;
            : BadRequest("Erro ao atualizar cadastro");
     }
 
-    [HttpDelete("ContactID")] 
+    [HttpDelete("ContactID")]
     public async Task<IActionResult> Delete(int contactid)
     {
-    
+
         var deletado = await _service.DeletarAsync(contactid);
 
         return deletado
@@ -78,4 +77,3 @@ namespace CrudTreinoApi.Controllers;
 
 
 
-   

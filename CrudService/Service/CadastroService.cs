@@ -1,5 +1,4 @@
-﻿using CrudTreinoApi.Models;
-using CrudTreinoApi.Service;
+﻿using CrudTreinoApi.Service;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
@@ -9,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CrudTreinoApi.Repository;
+using CrudDomain.Dtos;
 
 namespace CrudService.Service
 {
@@ -19,7 +19,7 @@ namespace CrudService.Service
         {
             _repository = repository;
         }
-        public async Task<bool> AdicionaAsync(CadastroRequest request)
+        public async Task<bool> AdicionaAsync(CadastroCreateDto request)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace CrudService.Service
             }
         }
 
-        public async Task<bool> AtualizarAsync(CadastroRequest request, int contactid)
+        public async Task<bool> AtualizarAsync(CadastroCreateDto request, int contactid)
         {
           
             try
@@ -72,13 +72,13 @@ namespace CrudService.Service
            
         }
 
-        public Task<CadastroResponse> BuscaCadastroAsync(int contactid)
+        public Task<CadastroReadDto> BuscaCadastroAsync(int contactid)
         {
            
             return _repository.BuscaCadastroAsync(contactid);
         }
 
-        public Task<IEnumerable<CadastroResponse>> BuscaCadastrosAsync()
+        public Task<IEnumerable<CadastroReadDto>> BuscaCadastrosAsync()
         {
             return _repository.BuscaCadastrosAsync();
         }
